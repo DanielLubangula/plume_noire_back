@@ -1,0 +1,23 @@
+### Create book (multipart)
+POST http://localhost:3000/api/admin/livres
+Authorization: Bearer <ADMIN_TOKEN>
+Content-Type: multipart/form-data
+
+--field titre=Mon livre
+--field description=Description du livre
+--field statut=payant
+--field prix=9.99
+--file fichier_pdf=@/path/to/sample.pdf
+--file couverture=@/path/to/cover.jpg
+
+### Update book (multipart)
+PUT http://localhost:3000/api/admin/livres/{{BOOK_ID}}
+Authorization: Bearer <ADMIN_TOKEN>
+Content-Type: multipart/form-data
+
+--field titre=Mon livre modifié
+--file couverture=@/path/to/new-cover.jpg
+
+### Delete book
+DELETE http://localhost:3000/api/admin/livres/{{BOOK_ID}}
+Authorization: Bearer <ADMIN_TOKEN>

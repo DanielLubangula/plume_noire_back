@@ -1,0 +1,64 @@
+### Create book (multipart)
+POST http://localhost:3000/api/admin/livres
+Authorization: Bearer <TOKEN>
+Content-Type: multipart/form-data; boundary=---011000010111000001101001
+
+---011000010111000001101001
+Content-Disposition: form-data; name="titre"
+
+Mon livre
+---011000010111000001101001
+Content-Disposition: form-data; name="description"
+
+Description courte
+---011000010111000001101001
+Content-Disposition: form-data; name="extrait"
+
+Extrait du livre
+---011000010111000001101001
+Content-Disposition: form-data; name="statut"
+
+payant
+---011000010111000001101001
+Content-Disposition: form-data; name="prix"
+
+9.99
+---011000010111000001101001
+Content-Disposition: form-data; name="fichier_pdf"; filename="book.pdf"
+Content-Type: application/pdf
+
+< ./fixtures/book.pdf
+---011000010111000001101001
+Content-Disposition: form-data; name="couverture"; filename="cover.jpg"
+Content-Type: image/jpeg
+
+< ./fixtures/cover.jpg
+---011000010111000001101001--
+
+
+### Update book (multipart)
+PUT http://localhost:3000/api/admin/livres/{{bookId}}
+Authorization: Bearer <TOKEN>
+Content-Type: multipart/form-data; boundary=---011000010111000001101001
+
+---011000010111000001101001
+Content-Disposition: form-data; name="titre"
+
+Titre mis à jour
+---011000010111000001101001
+Content-Disposition: form-data; name="prix"
+
+12.50
+---011000010111000001101001--
+
+### Delete book
+DELETE http://localhost:3000/api/admin/livres/{{bookId}}
+Authorization: Bearer <TOKEN>
+
+### Get all books
+GET http://localhost:3000/api/admin/livres
+Authorization: Bearer <TOKEN>
+
+### Get single book
+GET http://localhost:3000/api/admin/livres/{{bookId}}
+Authorization: Bearer <TOKEN>

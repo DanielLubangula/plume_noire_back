@@ -1,0 +1,31 @@
+### Create actu
+POST http://localhost:3000/api/admin/actus
+Authorization: Bearer <TOKEN>
+Content-Type: application/json
+
+{
+  "titre": "Nouvelle actu",
+  "contenu": "Contenu de l'actualité"
+}
+
+### Update actu
+PUT http://localhost:3000/api/admin/actus/{{actuId}}
+Authorization: Bearer <TOKEN>
+Content-Type: application/json
+
+{
+  "titre": "Titre mis à jour",
+  "contenu": "Nouveau contenu"
+}
+
+### Delete actu
+DELETE http://localhost:3000/api/admin/actus/{{actuId}}
+Authorization: Bearer <TOKEN>
+
+### Get all actus
+GET http://localhost:3000/api/admin/actus
+Authorization: Bearer <TOKEN>
+
+### Get single actu
+GET http://localhost:3000/api/admin/actus/{{actuId}}
+Authorization: Bearer <TOKEN>

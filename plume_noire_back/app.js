@@ -4,8 +4,8 @@ import cors from 'cors';
 import path from 'path';
 import helmet from 'helmet';
 import connectDB from './config/db.js';
-import adminAuthRoutes from './routes/admin/auth.admin.route.js';
-import adminFirstSetupRoutes from './routes/admin/first-setup.admin.route.js';
+import adminRoutes from './routes/admin/index.admin.route.js';
+import logger from './utils/logger.js';
 
 dotenv.config();
 await connectDB();
@@ -17,15 +17,18 @@ app.use('/static', express.static(path.join(process.cwd(), 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use('/api/admin', adminAuthRoutes);
-app.use('/api/admin', adminFirstSetupRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.send('Bienvenue sur notre site !');
 });
 
+// Error handler (must be mounted after routes)
+import errorHandler from './middlewares/error.handler.js';
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
- console.log(`Serveur démarré sur le port ${PORT}`);
-});   
+  logger.info({ port: PORT }, 'Serveur démarré');
+});
  
