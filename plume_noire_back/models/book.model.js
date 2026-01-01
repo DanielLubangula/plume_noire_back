@@ -23,6 +23,11 @@ const bookSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  // Flag pour indiquer si le livre est mis en avant
+  is_featured: {
+    type: Boolean,
+    default: false
+  },
   fichier_pdf: {
     type: String,
     default: ''

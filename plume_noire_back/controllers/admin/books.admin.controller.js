@@ -9,9 +9,14 @@ import logger from '../../utils/logger.js';
  */
 export const createBook = async (req, res, next) => {
   try {
-    const { titre, description, extrait, statut, prix } = req.body;
+    const { titre, description, extrait, statut, prix, is_featured } = req.body;
 
     const bookData = { titre, description, extrait, statut, prix: prix ? Number(prix) : 0 };
+
+    // Accepter is_featured si fourni
+    if (is_featured !== undefined) {
+      bookData.is_featured = is_featured === true || is_featured === 'true';
+    }
 
     // fichiers envoyés via multipart/form-data (multer memoryStorage)
     const files = req.files || {};
@@ -68,6 +73,7 @@ export const updateBook = async (req, res, next) => {
     if (extrait !== undefined) updateData.extrait = extrait;
     if (statut) updateData.statut = statut;
     if (prix !== undefined) updateData.prix = Number(prix);
+    if (req.body.is_featured !== undefined) updateData.is_featured = req.body.is_featured === true || req.body.is_featured === 'true';
 
     const files = req.files || {};
 

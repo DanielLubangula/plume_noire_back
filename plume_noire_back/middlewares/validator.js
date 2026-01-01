@@ -13,13 +13,15 @@ export const firstSetupValidationRules = () => [
 export const createBookValidationRules = () => [
   body('titre').notEmpty().withMessage('Titre requis'),
   body('statut').isIn(['gratuit', 'payant']).withMessage('Statut invalide'),
-  body('prix').if(body('statut').equals('payant')).notEmpty().withMessage('Prix requis pour un livre payant').isFloat({ min: 0 }).withMessage('Prix invalide')
+  body('prix').if(body('statut').equals('payant')).notEmpty().withMessage('Prix requis pour un livre payant').isFloat({ min: 0 }).withMessage('Prix invalide'),
+  body('is_featured').optional().isBoolean().withMessage('is_featured doit être un booléen').toBoolean()
 ];
 
 export const updateBookValidationRules = () => [
   body('titre').optional().notEmpty().withMessage('Titre invalide'),
   body('statut').optional().isIn(['gratuit', 'payant']).withMessage('Statut invalide'),
-  body('prix').optional().isFloat({ min: 0 }).withMessage('Prix invalide')
+  body('prix').optional().isFloat({ min: 0 }).withMessage('Prix invalide'),
+  body('is_featured').optional().isBoolean().withMessage('is_featured doit être un booléen').toBoolean()
 ];
 
 export const bookIdValidationRules = () => [

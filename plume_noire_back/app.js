@@ -5,6 +5,7 @@ import path from 'path';
 import helmet from 'helmet';
 import connectDB from './config/db.js';
 import adminRoutes from './routes/admin/index.admin.route.js';
+import publicHomeRoutes from './routes/public/home.public.route.js';
 import logger from './utils/logger.js';
 
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use('/api/admin', adminRoutes);
+app.use('/api/public', publicHomeRoutes);
 
 app.get('/', (req, res) => {
   res.send('Bienvenue sur notre site !');

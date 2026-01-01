@@ -1,0 +1,23 @@
+### Get public home page
+GET http://localhost:5000/api/public/home
+
+### Example response
+// 200
+{
+  "status": "success",
+  "data": {
+    "nom_auteur": "Nom de l'auteur",
+    "photo_auteur": "https://example.com/photo.jpg",
+    "courte_biographie": "Courte description...",
+    "livre_mis_en_avant": [
+      {
+        "id": "60a7b2f4b5c2a1f5d8f9e1a3",
+        "titre": "Titre du livre",
+        "resume": "Résumé / extrait...",
+        "couverture": "https://example.com/couv.jpg",
+        "statut": "payant"
+      }
+    ],
+    "message_accroche": "Texte d'accroche court"
+  }
+}

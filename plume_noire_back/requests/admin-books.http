@@ -7,8 +7,17 @@ Content-Type: multipart/form-data
 --field description=Description du livre
 --field statut=payant
 --field prix=9.99
+--field is_featured=true
 --file fichier_pdf=@/path/to/sample.pdf
 --file couverture=@/path/to/cover.jpg
+
+### Update book (multipart) (mark as featured)
+PUT http://localhost:3000/api/admin/livres/{{BOOK_ID}}
+Authorization: Bearer <ADMIN_TOKEN>
+Content-Type: multipart/form-data
+
+--field is_featured=true
+--file couverture=@/path/to/new-cover.jpg
 
 ### Update book (multipart)
 PUT http://localhost:3000/api/admin/livres/{{BOOK_ID}}
