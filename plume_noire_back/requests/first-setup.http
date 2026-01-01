@@ -1,0 +1,8 @@
+### Admin first setup
+POST http://localhost:3000/api/admin/first-setup
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "password123"
+}

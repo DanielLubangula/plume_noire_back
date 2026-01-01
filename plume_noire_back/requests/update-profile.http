@@ -1,0 +1,34 @@
+### Modifier le profil admin (email seulement)
+PUT http://localhost:5000/api/admin/profile
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+{
+  "email": "newemail@example.com",
+  "currentPassword": "currentpassword123"
+}
+
+###
+
+### Modifier le profil admin (mot de passe seulement)
+PUT http://localhost:5000/api/admin/profile
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+{
+  "password": "newpassword123",
+  "currentPassword": "currentpassword123"
+}
+
+###
+
+### Modifier le profil admin (email et mot de passe)
+PUT http://localhost:5000/api/admin/profile
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+{
+  "email": "newemail@example.com",
+  "password": "newpassword123",
+  "currentPassword": "currentpassword123"
+}
