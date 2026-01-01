@@ -8,8 +8,8 @@ const router = express.Router();
 
 router.get('/actus', requireAdminAuth, getActus);
 router.get('/actus/:id', requireAdminAuth, actusIdValidationRules(), validate, getActu);
-router.post('/actus', requireAdminAuth, createActuValidationRules(), validate, createActu);
-router.put('/actus/:id', requireAdminAuth, actusIdValidationRules(), validate, updateActuValidationRules(), validate, updateActu);
+router.post('/actus', requireAdminAuth, uploadSingleImage, createActuValidationRules(), validate, createActu);
+router.put('/actus/:id', requireAdminAuth, actusIdValidationRules(), uploadSingleImage, updateActuValidationRules(), validate, updateActu);
 router.delete('/actus/:id', requireAdminAuth, actusIdValidationRules(), validate, deleteActu);
 
 export default router;

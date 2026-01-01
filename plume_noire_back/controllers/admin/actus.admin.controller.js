@@ -1,7 +1,7 @@
 import Actu from '../../models/actus.model.js';
 import AppError from '../../utils/app-error.js';
-import logger from '../../utils/logger.js';
 import { uploadBuffer, deleteResource } from '../../utils/cloudinary.js';
+import logger from '../../utils/logger.js';
 
 /**
  * Crée une actualité
@@ -13,6 +13,9 @@ export const createActu = async (req, res, next) => {
 
     const actusData = { titre, contenu };
 
+    // Default image URL (will be absolute using request host)
+    const defaultImageUrl = `${req.protocol}://${req.get('host')}/static/images/default_image_actus.png`;
+
     // If image file provided (multipart/form-data), upload to Cloudinary
     if (req.file) {
       try {
@@ -23,12 +26,23 @@ export const createActu = async (req, res, next) => {
         actusData.image = uploadResult.secure_url;
         actusData.image_public_id = uploadResult.public_id;
       } catch (e) {
-        logger.error({ err: e }, 'Error uploading actu image');
+        logger.error({ err: e }, 'Error uploading actu image');        // Cloudinary "Stale request" often means server clock is out of sync
+        if (e?.message && e.message.includes('Stale request')) {
+          return next(new AppError(400, 'Erreur upload image : horloge du serveur désynchronisée. Synchronisez l\'horloge (NTP) et réessayez.'));
+        }
         return next(new AppError(500, 'Erreur upload image'));
       }
+    } else {
+      // No image provided; use default image URL
+      actusData.image = defaultImageUrl;
+      actusData.image_public_id = '';
     }
 
     const created = await Actu.create(actusData);
+
+    // Ensure created.actu has image set (should already)
+    if (!created.image) created.image = defaultImageUrl;
+
     return res.status(201).json({ status: 'success', actu: created });
   } catch (err) {
     logger.error({ err }, 'Error creating actu');
@@ -72,6 +86,9 @@ export const updateActu = async (req, res, next) => {
         updateData.image_public_id = uploadResult.public_id;
       } catch (e) {
         logger.error({ err: e }, 'Error uploading actu image');
+        if (e?.message && e.message.includes('Stale request')) {
+          return next(new AppError(400, 'Erreur upload image : horloge du serveur désynchronisée. Synchronisez l\'horloge (NTP) et réessayez.'));
+        }
         return next(new AppError(500, 'Erreur upload image'));
       }
     }
@@ -124,7 +141,14 @@ export const deleteActu = async (req, res, next) => {
 export const getActus = async (req, res, next) => {
   try {
     const actus = await Actu.find().sort({ created_at: -1 });
-    return res.status(200).json({ status: 'success', data: { actus } });
+
+    const defaultImageUrl = `${req.protocol}://${req.get('host')}/static/images/default_image_actus.png`;
+    const normalized = actus.map(a => ({
+      ...a.toObject(),
+      image: a.image && a.image.length ? a.image : defaultImageUrl
+    }));
+
+    return res.status(200).json({ status: 'success', data: { actus: normalized } });
   } catch (err) {
     logger.error({ err }, 'Error fetching actus');
     return next(new AppError(500, err.message));
@@ -140,7 +164,11 @@ export const getActu = async (req, res, next) => {
     const { id } = req.params;
     const actu = await Actu.findById(id);
     if (!actu) return next(new AppError(404, 'Actu not found'));
-    return res.status(200).json({ status: 'success', data: { actu } });
+
+    const defaultImageUrl = `${req.protocol}://${req.get('host')}/static/images/default_image_actus.png`;
+    const normalized = { ...actu.toObject(), image: actu.image && actu.image.length ? actu.image : defaultImageUrl };
+
+    return res.status(200).json({ status: 'success', data: { actu: normalized } });
   } catch (err) {
     logger.error({ err }, 'Error fetching actu');
     return next(new AppError(500, err.message));

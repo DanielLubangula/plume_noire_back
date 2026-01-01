@@ -3,6 +3,7 @@ import rateLimit from 'express-rate-limit';
 import { login, updateProfile } from '../../controllers/admin/auth.admin.controller.js';
 import { loginValidationRules, updateProfileValidationRules, validate } from '../../middlewares/validator.js';
 import { authenticateAdmin } from '../../middlewares/auth.admin.middleware.js';
+import { uploadSingleImage } from '../../middlewares/upload.js';
 
 const router = express.Router();
 
@@ -15,6 +16,6 @@ const loginLimiter = rateLimit({
 });
 
 router.post('/login', loginLimiter, loginValidationRules(), validate, login);
-router.put('/profile', authenticateAdmin, updateProfileValidationRules(), validate, updateProfile);
+router.put('/profile', authenticateAdmin, uploadSingleImage, updateProfileValidationRules(), validate, updateProfile);
 
 export default router;

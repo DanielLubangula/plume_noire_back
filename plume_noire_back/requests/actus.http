@@ -1,22 +1,38 @@
-### Create actu
+### Create actu (multipart with optional image)
 POST http://localhost:3000/api/admin/actus
 Authorization: Bearer <TOKEN>
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=---011000010111000001101001
 
-{
-  "titre": "Nouvelle actu",
-  "contenu": "Contenu de l'actualité"
-}
+---011000010111000001101001
+Content-Disposition: form-data; name="titre"
 
-### Update actu
+Nouvelle actu
+---011000010111000001101001
+Content-Disposition: form-data; name="contenu"
+
+Contenu de l'actualité
+---011000010111000001101001
+Content-Disposition: form-data; name="image"; filename="cover.jpg"
+Content-Type: image/jpeg
+
+< ./fixtures/cover.jpg
+---011000010111000001101001--
+
+### Update actu (multipart with optional image)
 PUT http://localhost:3000/api/admin/actus/{{actuId}}
 Authorization: Bearer <TOKEN>
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=---011000010111000001101001
 
-{
-  "titre": "Titre mis à jour",
-  "contenu": "Nouveau contenu"
-}
+---011000010111000001101001
+Content-Disposition: form-data; name="titre"
+
+Titre mis à jour
+---011000010111000001101001
+Content-Disposition: form-data; name="image"; filename="new-cover.jpg"
+Content-Type: image/jpeg
+
+< ./fixtures/new-cover.jpg
+---011000010111000001101001--
 
 ### Delete actu
 DELETE http://localhost:3000/api/admin/actus/{{actuId}}

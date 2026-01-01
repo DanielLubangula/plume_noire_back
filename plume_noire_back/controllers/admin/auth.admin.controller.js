@@ -2,6 +2,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import Admin from '../../models/admin.model.js';
 import AppError from '../../utils/app-error.js';
+import { uploadBuffer, deleteResource } from '../../utils/cloudinary.js';
+import logger from '../../utils/logger.js';
 
 /**
  * Authentifie un administrateur
@@ -38,14 +40,14 @@ export const login = async (req, res, next) => {
 };
 
 /**
- * Met à jour le profil admin (email et/ou mot de passe)
+ * Met à jour le profil admin (email, mot de passe, biographie, photo, réseaux sociaux)
  * @route PUT /api/admin/profile
- * @returns {Promise<Object>} Message de succès
+ * @returns {Promise<Object>} Message de succès et profil mis à jour
  */
 export const updateProfile = async (req, res, next) => {
   try {
     const { email, password, currentPassword } = req.body;
-    const admin = req.admin;
+    let admin = req.admin;
 
     // Vérifier le mot de passe actuel
     const isCurrentPasswordValid = await bcrypt.compare(currentPassword, admin.password_hash);
@@ -70,15 +72,91 @@ export const updateProfile = async (req, res, next) => {
       updateData.password_hash = await bcrypt.hash(password, saltRounds);
     }
 
+    // Biographie
+    if (req.body.biographie !== undefined) updateData.biographie = req.body.biographie;
+
+    // Handle optional photo upload (req.file provided by uploadSingleImage middleware)
+    if (req.file) {
+      // delete previous photo if exists
+      if (admin.photo_public_id) {
+        try {
+          await deleteResource(admin.photo_public_id, { resource_type: 'image' });
+        } catch (e) {
+          logger.warn({ err: e }, 'Erreur suppression ancienne photo sur Cloudinary (admin)');
+        }
+      }
+
+      try {
+        const uploadResult = await uploadBuffer(req.file.buffer, {
+          folder: 'plume-noire/admin/photos',
+          resource_type: 'image'
+        });
+        updateData.photo = uploadResult.secure_url;
+        updateData.photo_public_id = uploadResult.public_id;
+      } catch (e) {
+        logger.error({ err: e }, 'Error uploading admin profile photo');
+        if (e?.message && e.message.includes('Stale request')) {
+          return next(new AppError(400, "Erreur upload photo : horloge du serveur désynchronisée. Synchronisez l'horloge (NTP) et réessayez."));
+        }
+        return next(new AppError(500, 'Erreur upload photo'));
+      }
+    }
+
+    // Handle socials if provided (JSON string or array)
+    if (req.body.socials !== undefined) {
+      let socials;
+      try {
+        socials = typeof req.body.socials === 'string' ? JSON.parse(req.body.socials) : req.body.socials;
+      } catch (e) {
+        return next(new AppError(400, 'Format socials invalide (JSON attendu)'));
+      }
+      if (!Array.isArray(socials)) return next(new AppError(400, 'Socials doit être un tableau d\'objets {network, url}'));
+
+      const ALLOWED_NETWORKS = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube', 'tiktok', 'github'];
+      for (const s of socials) {
+        if (!s.network || !ALLOWED_NETWORKS.includes(s.network)) return next(new AppError(400, `Réseau social invalide: ${s.network}`));
+        if (s.url && typeof s.url !== 'string') return next(new AppError(400, 'URL invalide pour un réseau social'));
+      }
+
+      // Merge with existing social_links
+      const current = admin.social_links || [];
+      const map = new Map(current.map(s => [s.network, s.url]));
+
+      for (const s of socials) {
+        const network = s.network;
+        const url = s.url;
+        if (url === null || url === '') {
+          map.delete(network);
+        } else {
+          map.set(network, url);
+        }
+      }
+
+      const newArray = Array.from(map.entries()).map(([network, url]) => ({ network, url }));
+      updateData.social_links = newArray;
+    }
+
+    updateData.updated_at = new Date();
+
     if (Object.keys(updateData).length === 0) {
       return next(new AppError(400, 'Aucune modification fournie'));
     }
 
-    await Admin.findByIdAndUpdate(admin._id, updateData);
+    admin = await Admin.findByIdAndUpdate(admin._id, { $set: updateData }, { new: true });
+
+    // Sanitize admin for response
+    const safe = {
+      _id: admin._id,
+      email: admin.email,
+      biographie: admin.biographie || '',
+      photo: admin.photo || '',
+      social_links: admin.social_links || []
+    };
 
     res.status(200).json({
       status: 'success',
-      message: 'Profil mis à jour avec succès'
+      message: 'Profil mis à jour avec succès',
+      admin: safe
     });
   } catch (err) {
     next(new AppError(500, err.message));

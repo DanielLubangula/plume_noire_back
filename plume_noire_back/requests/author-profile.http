@@ -1,28 +1,6 @@
-### Modifier le profil admin (email seulement)
-PUT http://localhost:5000/api/admin/profile
-Content-Type: application/json
-Authorization: Bearer YOUR_JWT_TOKEN_HERE
+### NOTE: Deprecated — the `/api/admin/profil` endpoints have been removed. Use `/api/admin/profile` existing admin endpoint instead.
 
-{
-  "email": "newemail@example.com",
-  "currentPassword": "currentpassword123"
-}
-
-###
-
-### Modifier le profil admin (mot de passe seulement)
-PUT http://localhost:5000/api/admin/profile
-Content-Type: application/json
-Authorization: Bearer YOUR_JWT_TOKEN_HERE
-
-{
-  "password": "newpassword123",
-  "currentPassword": "currentpassword123"
-}
-
-###
-
-### Modifier le profil admin (email, biographie, photo et réseaux sociaux)
+### Update admin profile (email, biographie, photo, réseaux sociaux)
 PUT http://localhost:5000/api/admin/profile
 Authorization: Bearer YOUR_JWT_TOKEN_HERE
 Content-Type: multipart/form-data; boundary=---011000010111000001101001
@@ -30,7 +8,7 @@ Content-Type: multipart/form-data; boundary=---011000010111000001101001
 ---011000010111000001101001
 Content-Disposition: form-data; name="biographie"
 
-Nouvelle biographie
+Biographie test
 ---011000010111000001101001
 Content-Disposition: form-data; name="socials"
 
@@ -45,3 +23,5 @@ Content-Disposition: form-data; name="currentPassword"
 
 currentpassword123
 ---011000010111000001101001--
+
+### Delete admin profile photo (handled by updating with no image and clearing public id manually via DB or implement dedicated route separately)

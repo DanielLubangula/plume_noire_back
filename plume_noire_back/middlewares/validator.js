@@ -40,10 +40,49 @@ export const updateActuValidationRules = () => [
   body('contenu').optional().notEmpty().withMessage('Contenu invalide')
 ];
 
+export const profileValidationRules = () => [
+  body('biographie').optional().isString().withMessage('Biographie invalide'),
+  body('email_contact').optional().isEmail().withMessage('Email invalide'),
+  body('socials').optional().custom(value => {
+    // accept JSON string or array
+    let arr = value;
+    if (typeof value === 'string') {
+      try {
+        arr = JSON.parse(value);
+      } catch (e) {
+        throw new Error('Format socials invalide (JSON attendu)');
+      }
+    }
+    if (!Array.isArray(arr)) throw new Error('Socials doit être un tableau');
+    for (const s of arr) {
+      if (!s.network || !s.url) throw new Error('Chaque social doit contenir network et url');
+      if (typeof s.network !== 'string' || typeof s.url !== 'string') throw new Error('Format social invalide');
+    }
+    return true;
+  })
+];
+
 export const updateProfileValidationRules = () => [
   body('email').optional().isEmail().withMessage('Invalid email'),
   body('password').optional().isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
-  body('currentPassword').notEmpty().withMessage('Current password is required')
+  body('currentPassword').notEmpty().withMessage('Current password is required'),
+  body('biographie').optional().isString().withMessage('Biographie invalide'),
+  body('socials').optional().custom(value => {
+    let arr = value;
+    if (typeof value === 'string') {
+      try {
+        arr = JSON.parse(value);
+      } catch (e) {
+        throw new Error('Format socials invalide (JSON attendu)');
+      }
+    }
+    if (!Array.isArray(arr)) throw new Error('Socials doit être un tableau');
+    for (const s of arr) {
+      if (!s.network || !s.url) throw new Error('Chaque social doit contenir network et url');
+      if (typeof s.network !== 'string' || typeof s.url !== 'string') throw new Error('Format social invalide');
+    }
+    return true;
+  })
 ];
 
 export const validate = (req, res, next) => {
@@ -63,6 +102,7 @@ export default {
   actusIdValidationRules,
   createActuValidationRules,
   updateActuValidationRules,
+  profileValidationRules,
   updateProfileValidationRules,
   validate
 };
