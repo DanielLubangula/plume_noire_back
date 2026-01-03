@@ -9,6 +9,7 @@ import publicHomeRoutes from './routes/public/home.public.route.js';
 import publicBioRoutes from './routes/public/bio.public.route.js';
 import publicSocialRoutes from './routes/public/socials.public.route.js';
 import publicBooksRoutes from './routes/public/books.public.route.js';
+import publicActusRoutes from './routes/public/actus.public.route.js';
 import logger from './utils/logger.js';
 
 dotenv.config();
@@ -26,6 +27,7 @@ app.use('/api/public', publicHomeRoutes);
 app.use('/api/public', publicBioRoutes);
 app.use('/api/public', publicSocialRoutes);
 app.use('/api/public', publicBooksRoutes);
+app.use('/api/public', publicActusRoutes);
 
 app.get('/', (req, res) => {
   res.send('Bienvenue sur notre site !');

@@ -1,0 +1,25 @@
+### Get public actus (all)
+GET http://localhost:5000/api/public/actus
+
+### Get public actus (limit 5)
+GET http://localhost:5000/api/public/actus?limit=5
+
+### Get single actu
+GET http://localhost:5000/api/public/actus/{{ACTU_ID}}
+
+### Example response
+// 200
+{
+  "status": "success",
+  "data": {
+    "actus": [
+      {
+        "id": "60a7b2f4b5c2a1f5d8f9e1a3",
+        "titre": "Nouvelle actu",
+        "excerpt": "Les premières lignes...",
+        "image": "https://.../image.jpg",
+        "created_at": "2026-01-01T12:00:00.000Z"
+      }
+    ]
+  }
+}
