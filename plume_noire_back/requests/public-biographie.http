@@ -1,0 +1,22 @@
+### Get public biography
+GET http://localhost:5000/api/public/biographie
+
+### Example response
+// 200
+{
+  "status": "success",
+  "data": {
+    "admin": {
+      "_id": "60a7b2f4b5c2a1f5d8f9e1a3",
+      "email": "admin@example.com",
+      "nom": "Nom de l'auteur",
+      "biographie": "Texte complet de la biographie...",
+      "short_biographie": "Courte bio...",
+      "photo": "https://res.cloudinary.com/.../photo.jpg",
+      "social_links": [
+        { "network": "twitter", "url": "https://twitter.com/author" }
+      ],
+      "message_accroche": "Texte d'accroche"
+    }
+  }
+}

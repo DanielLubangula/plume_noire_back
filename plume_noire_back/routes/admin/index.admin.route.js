@@ -4,6 +4,7 @@ import firstSetupRoutes from './first-setup.admin.route.js';
 import dashboardRoutes from './dashboard.admin.route.js';
 import booksRoutes from './books.admin.route.js';
 import actusRoutes from './actus.admin.route.js';
+import ProfileRoute from './profile.admin.route.js'
 
 const router = express.Router();
 

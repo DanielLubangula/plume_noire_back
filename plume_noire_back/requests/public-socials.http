@@ -1,0 +1,14 @@
+### Get public socials
+GET http://localhost:5000/api/public/socials
+
+### Example response
+// 200
+{
+  "status": "success",
+  "data": {
+    "social_links": [
+      { "network": "twitter", "url": "https://twitter.com/author" },
+      { "network": "github", "url": "https://github.com/author" }
+    ]
+  }
+}

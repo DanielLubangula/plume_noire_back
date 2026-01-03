@@ -72,8 +72,12 @@ export const updateProfile = async (req, res, next) => {
       updateData.password_hash = await bcrypt.hash(password, saltRounds);
     }
 
-    // Biographie
+    // Nom, biographie, courte biographie, email de contact et message d'accroche
+    if (req.body.nom !== undefined) {updateData.nom = req.body.nom;}
     if (req.body.biographie !== undefined) updateData.biographie = req.body.biographie;
+    if (req.body.short_biographie !== undefined) updateData.short_biographie = req.body.short_biographie;
+    if (req.body.email_contact !== undefined) updateData.email_contact = req.body.email_contact;
+    if (req.body.message_accroche !== undefined) updateData.message_accroche = req.body.message_accroche;
 
     // Handle optional photo upload (req.file provided by uploadSingleImage middleware)
     if (req.file) {
@@ -141,23 +145,60 @@ export const updateProfile = async (req, res, next) => {
     if (Object.keys(updateData).length === 0) {
       return next(new AppError(400, 'Aucune modification fournie'));
     }
-
     admin = await Admin.findByIdAndUpdate(admin._id, { $set: updateData }, { new: true });
-
+    
     // Sanitize admin for response
     const safe = {
       _id: admin._id,
       email: admin.email,
+      nom: admin.nom || '',
       biographie: admin.biographie || '',
+      short_biographie: admin.short_biographie || '',
+      email_contact: admin.email_contact || '',
+      message_accroche: admin.message_accroche || '',
       photo: admin.photo || '',
-      social_links: admin.social_links || []
+      social_links: admin.social_links || [],
+      created_at: admin.created_at,
+      updated_at: admin.updated_at
     };
-
     res.status(200).json({
       status: 'success',
       message: 'Profil mis à jour avec succès',
       admin: safe
     });
+  } catch (err) {
+    next(new AppError(500, err.message));
+  }
+};
+
+/**
+ * Supprimer plusieurs réseaux sociaux (Admin)
+ * @route DELETE /api/admin/profile/socials
+ * @body { networks: string[] }
+ */
+export const deleteSocials = async (req, res, next) => {
+  try {
+    const { networks } = req.body;
+    if (!Array.isArray(networks) || networks.length === 0) return next(new AppError(400, 'Aucun réseau fourni'));
+
+    const ALLOWED_NETWORKS = ['facebook','whatsapp','twitter','instagram','linkedin','youtube','tiktok','github'];
+    for (const n of networks) {
+      if (!ALLOWED_NETWORKS.includes(n)) return next(new AppError(400, `Réseau social invalide: ${n}`));
+    }
+
+    const admin = req.admin;
+    if (!admin) return next(new AppError(401, 'Admin non authentifié'));
+
+    const current = admin.social_links || [];
+    const newArray = current.filter(s => !networks.includes(s.network));
+
+    if (newArray.length === current.length) {
+      return next(new AppError(404, 'Aucun réseau supprimé'));
+    }
+
+    const updated = await Admin.findByIdAndUpdate(admin._id, { $set: { social_links: newArray, updated_at: new Date() } }, { new: true });
+
+    return res.status(200).json({ status: 'success', message: 'Réseaux supprimés', data: { social_links: updated.social_links } });
   } catch (err) {
     next(new AppError(500, err.message));
   }

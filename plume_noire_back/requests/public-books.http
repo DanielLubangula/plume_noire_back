@@ -1,0 +1,15 @@
+### Download free book
+GET http://localhost:5000/api/public/livres/{{BOOK_ID}}/telecharger
+
+# If the book is free, this will prompt a PDF download (server will send Content-Disposition)
+
+### Example responses
+# 403 - Paid
+{
+  "status": "error",
+  "statusCode": 403,
+  "message": "Livre payant — téléchargement non autorisé pour le moment"
+}
+
+# 200 - file download (binary stream)
+# The download will be sent with a filename ending with .pdf

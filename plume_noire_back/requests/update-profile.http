@@ -28,9 +28,25 @@ Authorization: Bearer YOUR_JWT_TOKEN_HERE
 Content-Type: multipart/form-data; boundary=---011000010111000001101001
 
 ---011000010111000001101001
+Content-Disposition: form-data; name="nom"
+
+Nom de l'auteur
+---011000010111000001101001
+Content-Disposition: form-data; name="email_contact"
+
+author@example.com
+---011000010111000001101001
+Content-Disposition: form-data; name="message_accroche"
+
+Texte d'accroche
+---011000010111000001101001
 Content-Disposition: form-data; name="biographie"
 
 Nouvelle biographie
+---011000010111000001101001
+Content-Disposition: form-data; name="short_biographie"
+
+Courte bio
 ---011000010111000001101001
 Content-Disposition: form-data; name="socials"
 

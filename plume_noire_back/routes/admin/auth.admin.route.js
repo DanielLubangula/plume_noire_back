@@ -1,7 +1,7 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { login, updateProfile } from '../../controllers/admin/auth.admin.controller.js';
-import { loginValidationRules, updateProfileValidationRules, validate } from '../../middlewares/validator.js';
+import { login, updateProfile, deleteSocials } from '../../controllers/admin/auth.admin.controller.js';
+import { loginValidationRules, updateProfileValidationRules, deleteSocialsValidationRules, validate } from '../../middlewares/validator.js';
 import { authenticateAdmin } from '../../middlewares/auth.admin.middleware.js';
 import { uploadSingleImage } from '../../middlewares/upload.js';
 
@@ -17,5 +17,6 @@ const loginLimiter = rateLimit({
 
 router.post('/login', loginLimiter, loginValidationRules(), validate, login);
 router.put('/profile', authenticateAdmin, uploadSingleImage, updateProfileValidationRules(), validate, updateProfile);
+router.delete('/profile/socials', authenticateAdmin, deleteSocialsValidationRules(), validate, deleteSocials);
 
 export default router;

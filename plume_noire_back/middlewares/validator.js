@@ -68,7 +68,11 @@ export const updateProfileValidationRules = () => [
   body('email').optional().isEmail().withMessage('Invalid email'),
   body('password').optional().isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
   body('currentPassword').notEmpty().withMessage('Current password is required'),
+  body('nom').optional().isString().withMessage('Nom invalide'),
   body('biographie').optional().isString().withMessage('Biographie invalide'),
+  body('short_biographie').optional().isString().withMessage('Courte biographie invalide'),
+  body('email_contact').optional().isEmail().withMessage('Email de contact invalide'),
+  body('message_accroche').optional().isString().withMessage('Message d\'accroche invalide'),
   body('socials').optional().custom(value => {
     let arr = value;
     if (typeof value === 'string') {
@@ -85,6 +89,11 @@ export const updateProfileValidationRules = () => [
     }
     return true;
   })
+];
+
+export const deleteSocialsValidationRules = () => [
+  body('networks').isArray({ min: 1 }).withMessage('networks doit être un tableau non vide'),
+  body('networks.*').isIn(['facebook','twitter','instagram','linkedin','youtube','tiktok','github']).withMessage('Réseau social inconnu')
 ];
 
 export const validate = (req, res, next) => {

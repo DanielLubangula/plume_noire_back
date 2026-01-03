@@ -24,4 +24,4 @@ export const uploadFields = upload.fields([
 
 export const uploadSingleImage = upload.single('image');
 
-export default upload;
+export default upload; 
